@@ -44,8 +44,11 @@ The skill is written to work zero-install — it calls `npx namecom-cli` when th
 Create a **production** API token at <https://www.name.com/account/settings/api> (you get a username + token), then:
 
 ```bash
-namecom login --user <username> --token <token>
+namecom login                                  # prompts for username + token (masked) at a TTY
+namecom login --user <username> --token <token># or pass them directly / via env
 ```
+
+> **Interactive only for humans.** Prompts, spinners, and color appear only when you're at a real terminal. When output is piped, in CI, an agent is driving, or you pass `--json`, the CLI is fully non-interactive and deterministic — missing inputs become a clean error, never a hung prompt. (`namecom` and `namecom-cli` are both valid commands.)
 
 `login` verifies the credentials, then stores them in your macOS Keychain (`namecom_user` / `namecom_token`). You can also just set `NAMECOM_USER` / `NAMECOM_TOKEN` in the environment and skip `login`.
 

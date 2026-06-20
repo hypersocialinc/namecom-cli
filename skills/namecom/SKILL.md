@@ -31,6 +31,13 @@ namecom login --user <username> --token <token>   # stored in macOS Keychain
 namecom whoami                                     # verify
 ```
 
+## Non-interactive by default for agents
+
+When output is piped or `--json` is passed, the CLI never prompts — missing
+required inputs become a clean error, not a hung prompt. Always pass `--json`
+when parsing output, and pass credentials via `--user/--token` or
+`NAMECOM_USER`/`NAMECOM_TOKEN` rather than relying on the interactive `login`.
+
 ## Discovering the surface
 
 Always available for introspection — call this first if unsure:

@@ -2,6 +2,7 @@ import { resolveCreds, storeCreds } from "../auth.js";
 import { NameClient } from "../client.js";
 import { globalsOf } from "../runtime.js";
 import { emit } from "../output.js";
+import { interactive, task, clack, pc } from "../ui.js";
 
 export function registerAccount(program) {
   program
@@ -11,16 +12,40 @@ export function registerAccount(program) {
     .option("--token <token>", "Name.com API token")
     .action(async (o, cmd) => {
       const opts = globalsOf(cmd);
-      const user = o.user || process.env.NAMECOM_USER;
-      const token = o.token || process.env.NAMECOM_TOKEN;
+      let user = o.user || process.env.NAMECOM_USER;
+      let token = o.token || process.env.NAMECOM_TOKEN;
+
+      // Prompt for anything missing — but only for a human at a TTY.
+      if ((!user || !token) && interactive(opts)) {
+        clack.intro(pc.cyan("namecom login"));
+        if (!user) {
+          user = await clack.text({
+            message: "Name.com API username",
+            validate: (v) => (v ? undefined : "Required"),
+          });
+        }
+        if (!token) {
+          token = await clack.password({
+            message: "Name.com API token",
+            validate: (v) => (v ? undefined : "Required"),
+          });
+        }
+        if (clack.isCancel(user) || clack.isCancel(token)) {
+          clack.cancel("Aborted.");
+          process.exit(1);
+        }
+      }
+
       if (!user || !token) {
         throw new Error("Provide --user and --token (or set NAMECOM_USER and NAMECOM_TOKEN).");
       }
-      // Verify the credentials before persisting them.
+
       const c = new NameClient({ user, token, baseUrl: opts.apiUrl });
-      await c.listDomains();
+      await task(opts, "Verifying credentials", () => c.listDomains());
       const where = storeCreds(user, token);
-      emit({ ok: true, stored_in: where, user }, opts);
+
+      if (interactive(opts)) clack.outro(pc.green(`✓ Stored in ${where} for ${user}`));
+      else emit({ ok: true, stored_in: where, user }, opts);
     });
 
   program
@@ -35,7 +60,7 @@ export function registerAccount(program) {
         return;
       }
       const c = new NameClient({ user, token, baseUrl: opts.apiUrl });
-      const domains = await c.listDomains();
+      const domains = await task(opts, "Checking credentials", () => c.listDomains());
       emit({ authenticated: true, user, domains: domains.length }, opts);
     });
 }

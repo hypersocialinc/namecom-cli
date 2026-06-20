@@ -10,6 +10,7 @@ import {
 } from "../src/runtime.js";
 import { buildProgram, commandTree } from "../src/cli.js";
 import { skillInstallArgs, bundledSkillPath } from "../src/commands/skill.js";
+import { interactive } from "../src/ui.js";
 
 test("normHost: @ and undefined are the zone apex", () => {
   assert.equal(normHost("@"), "");
@@ -101,4 +102,18 @@ test("bundledSkillPath: resolves to an existing SKILL.md", () => {
   const p = bundledSkillPath();
   assert.ok(p.endsWith("/skills/namecom/SKILL.md"));
   assert.ok(existsSync(p));
+});
+
+test("interactive: only true for a human TTY without --json", () => {
+  const tty = { stdin: { isTTY: true }, stdout: { isTTY: true } };
+  const piped = { stdin: { isTTY: false }, stdout: { isTTY: true } };
+
+  // human at a real terminal -> interactive
+  assert.equal(interactive({}, tty), true);
+  // --json forces non-interactive even on a TTY (agents/scripts)
+  assert.equal(interactive({ json: true }, tty), false);
+  // piped/redirected stdin -> non-interactive
+  assert.equal(interactive({}, piped), false);
+  // no streams (e.g. detached) -> non-interactive
+  assert.equal(interactive({}, { stdin: {}, stdout: {} }), false);
 });

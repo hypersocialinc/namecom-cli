@@ -1,10 +1,11 @@
 {
   "name": "namecom-cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Fast, agent-friendly CLI for Name.com DNS & domains (v4 API): JSON output, idempotent record upserts, OS-keychain auth.",
   "type": "module",
   "bin": {
-    "namecom": "bin/namecom.js"
+    "namecom": "bin/namecom.js",
+    "namecom-cli": "bin/namecom.js"
   },
   "files": [
     "bin",
@@ -41,6 +42,8 @@
     "url": "https://github.com/hypersocialinc/namecom-cli/issues"
   },
   "dependencies": {
-    "commander": "^12.1.0"
+    "@clack/prompts": "^1.6.0",
+    "commander": "^12.1.0",
+    "picocolors": "^1.1.1"
   }
 }

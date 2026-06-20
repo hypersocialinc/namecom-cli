@@ -7,6 +7,7 @@ import {
   classifyUpsert,
 } from "../runtime.js";
 import { emit } from "../output.js";
+import { interactive, task, clack } from "../ui.js";
 
 export function registerRecords(program) {
   const records = program.command("records").description("Manage DNS records");
@@ -49,7 +50,9 @@ export function registerRecords(program) {
     .action(async (domain, o, cmd) => {
       const opts = globalsOf(cmd);
       const c = clientFrom(opts);
-      const r = await c.createRecord(domain, buildRecordBody(o));
+      const r = await task(opts, `Creating ${o.type.toUpperCase()} ${o.host}`, () =>
+        c.createRecord(domain, buildRecordBody(o))
+      );
       emit(opts.json ? r : fmtRec(r), opts);
     });
 
@@ -73,7 +76,9 @@ export function registerRecords(program) {
       };
       if (o.priority != null) body.priority = Number(o.priority);
       else if (cur.priority != null) body.priority = cur.priority;
-      const r = await c.updateRecord(domain, id, body);
+      const r = await task(opts, `Updating record ${id}`, () =>
+        c.updateRecord(domain, id, body)
+      );
       emit(opts.json ? r : fmtRec(r), opts);
     });
 
@@ -85,7 +90,14 @@ export function registerRecords(program) {
     .action(async (domain, id, o, cmd) => {
       const opts = globalsOf(cmd);
       const c = clientFrom(opts);
-      await c.deleteRecord(domain, id);
+      if (!o.yes && interactive(opts)) {
+        const ok = await clack.confirm({ message: `Delete record ${id} on ${domain}?` });
+        if (clack.isCancel(ok) || !ok) {
+          clack.cancel("Aborted.");
+          process.exit(1);
+        }
+      }
+      await task(opts, `Deleting record ${id}`, () => c.deleteRecord(domain, id));
       emit({ deleted: true, id: Number(id) }, opts);
     });
 
@@ -110,9 +122,13 @@ export function registerRecords(program) {
       const body = buildRecordBody(o);
 
       let record;
-      if (action === "unchanged") record = target;
-      else if (action === "updated") record = await c.updateRecord(domain, target.id, body);
-      else record = await c.createRecord(domain, body);
+      if (action === "unchanged") {
+        record = target;
+      } else {
+        record = await task(opts, `${action === "updated" ? "Updating" : "Creating"} ${type} ${host || "@"}`, () =>
+          action === "updated" ? c.updateRecord(domain, target.id, body) : c.createRecord(domain, body)
+        );
+      }
 
       emit(opts.json ? { action, record } : { action, ...fmtRec(record) }, opts);
     });
