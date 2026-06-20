@@ -4,7 +4,7 @@ import {
   fmtRec,
   normHost,
   buildRecordBody,
-  SINGLE_VALUED,
+  classifyUpsert,
 } from "../runtime.js";
 import { emit } from "../output.js";
 
@@ -106,20 +106,14 @@ export function registerRecords(program) {
       const existing = (await c.listRecords(domain)).filter(
         (r) => (r.host || "") === host && r.type === type
       );
-      const exact = existing.find((r) => r.answer === o.answer);
+      const { action, target } = classifyUpsert(existing, type, o.answer);
       const body = buildRecordBody(o);
 
-      let action, record;
-      if (exact) {
-        action = "unchanged";
-        record = exact;
-      } else if (SINGLE_VALUED.has(type) && existing.length) {
-        action = "updated";
-        record = await c.updateRecord(domain, existing[0].id, body);
-      } else {
-        action = "created";
-        record = await c.createRecord(domain, body);
-      }
+      let record;
+      if (action === "unchanged") record = target;
+      else if (action === "updated") record = await c.updateRecord(domain, target.id, body);
+      else record = await c.createRecord(domain, body);
+
       emit(opts.json ? { action, record } : { action, ...fmtRec(record) }, opts);
     });
 }

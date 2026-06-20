@@ -28,7 +28,7 @@ export function buildProgram() {
     .command("commands")
     .description("Print the full command tree as JSON (for agents & tooling)")
     .action(() => {
-      process.stdout.write(JSON.stringify(serialize(program), null, 2) + "\n");
+      process.stdout.write(JSON.stringify(commandTree(program), null, 2) + "\n");
     });
 
   return program;
@@ -36,7 +36,7 @@ export function buildProgram() {
 
 // Walk the commander tree into plain JSON so an agent can discover the whole
 // surface in one call (mirrors the Resend CLI's `commands` command).
-function serialize(cmd) {
+export function commandTree(cmd) {
   return {
     name: cmd.name(),
     description: cmd.description() || undefined,
@@ -48,7 +48,7 @@ function serialize(cmd) {
     })),
     commands: cmd.commands
       .filter((c) => c.name() !== "commands")
-      .map(serialize),
+      .map(commandTree),
   };
 }
 

@@ -51,3 +51,18 @@ export function buildRecordBody(o) {
   if (o.priority != null) body.priority = Number(o.priority);
   return body;
 }
+
+// Decide what `records set` should do, given the records that already exist
+// for a (host, type). Pure — no network — so it's the unit under test.
+//   - exact answer already present        -> "unchanged"
+//   - single-valued type with a different
+//     value already present               -> "updated" (in place)
+//   - otherwise                           -> "created"
+export function classifyUpsert(existing, type, answer) {
+  const exact = existing.find((r) => r.answer === answer);
+  if (exact) return { action: "unchanged", target: exact };
+  if (SINGLE_VALUED.has(type) && existing.length) {
+    return { action: "updated", target: existing[0] };
+  }
+  return { action: "created", target: null };
+}
