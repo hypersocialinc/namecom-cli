@@ -1,0 +1,46 @@
+{
+  "name": "namecom-cli",
+  "version": "0.1.0",
+  "description": "Fast, agent-friendly CLI for Name.com DNS & domains (v4 API): JSON output, idempotent record upserts, OS-keychain auth.",
+  "type": "module",
+  "bin": {
+    "namecom": "bin/namecom.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "skills"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "namecom": "node bin/namecom.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "name.com",
+    "namecom",
+    "dns",
+    "domains",
+    "cli",
+    "dkim",
+    "spf",
+    "registrar",
+    "agent",
+    "skills"
+  ],
+  "author": "Hypersocial, Inc.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hypersocialinc/namecom-cli.git"
+  },
+  "homepage": "https://github.com/hypersocialinc/namecom-cli#readme",
+  "bugs": {
+    "url": "https://github.com/hypersocialinc/namecom-cli/issues"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  }
+}
