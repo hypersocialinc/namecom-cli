@@ -2,7 +2,9 @@ import { resolveCreds, storeCreds } from "../auth.js";
 import { NameClient } from "../client.js";
 import { globalsOf } from "../runtime.js";
 import { emit } from "../output.js";
-import { interactive, task, clack, pc } from "../ui.js";
+import { interactive, task, clack, pc, openUrl } from "../ui.js";
+
+export const TOKEN_URL = "https://www.name.com/account/settings/api";
 
 export function registerAccount(program) {
   program
@@ -23,16 +25,35 @@ export function registerAccount(program) {
             message: "Name.com API username",
             validate: (v) => (v ? undefined : "Required"),
           });
+          if (clack.isCancel(user)) {
+            clack.cancel("Aborted.");
+            process.exit(1);
+          }
         }
         if (!token) {
+          // Name.com has no API to mint a token, so help the user grab one:
+          // show the page and offer to open it in their browser.
+          clack.note(pc.underline(TOKEN_URL), "Create a production API token at");
+          const open = await clack.confirm({
+            message: "Open that page in your browser now?",
+            initialValue: true,
+          });
+          if (clack.isCancel(open)) {
+            clack.cancel("Aborted.");
+            process.exit(1);
+          }
+          if (open) {
+            openUrl(TOKEN_URL);
+            clack.log.info(`Opened ${TOKEN_URL}`);
+          }
           token = await clack.password({
-            message: "Name.com API token",
+            message: "Paste your Name.com API token",
             validate: (v) => (v ? undefined : "Required"),
           });
-        }
-        if (clack.isCancel(user) || clack.isCancel(token)) {
-          clack.cancel("Aborted.");
-          process.exit(1);
+          if (clack.isCancel(token)) {
+            clack.cancel("Aborted.");
+            process.exit(1);
+          }
         }
       }
 

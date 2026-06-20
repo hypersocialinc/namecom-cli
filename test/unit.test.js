@@ -10,7 +10,8 @@ import {
 } from "../src/runtime.js";
 import { buildProgram, commandTree } from "../src/cli.js";
 import { skillInstallArgs, bundledSkillPath } from "../src/commands/skill.js";
-import { interactive } from "../src/ui.js";
+import { TOKEN_URL } from "../src/commands/account.js";
+import { interactive, openUrl } from "../src/ui.js";
 
 test("normHost: @ and undefined are the zone apex", () => {
   assert.equal(normHost("@"), "");
@@ -116,4 +117,9 @@ test("interactive: only true for a human TTY without --json", () => {
   assert.equal(interactive({}, piped), false);
   // no streams (e.g. detached) -> non-interactive
   assert.equal(interactive({}, { stdin: {}, stdout: {} }), false);
+});
+
+test("login points at the real Name.com API token page", () => {
+  assert.equal(TOKEN_URL, "https://www.name.com/account/settings/api");
+  assert.equal(typeof openUrl, "function");
 });

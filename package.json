@@ -1,6 +1,6 @@
 {
   "name": "namecom-cli",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Fast, agent-friendly CLI for Name.com DNS & domains (v4 API): JSON output, idempotent record upserts, OS-keychain auth.",
   "type": "module",
   "bin": {

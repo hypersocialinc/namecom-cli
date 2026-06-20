@@ -44,7 +44,8 @@ The skill is written to work zero-install — it calls `npx namecom-cli` when th
 Create a **production** API token at <https://www.name.com/account/settings/api> (you get a username + token), then:
 
 ```bash
-namecom login                                  # prompts for username + token (masked) at a TTY
+namecom login                                  # prompts for username + token (masked) at a TTY;
+                                               # offers to open the token page in your browser
 namecom login --user <username> --token <token># or pass them directly / via env
 ```
 
