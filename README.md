@@ -99,6 +99,23 @@ namecom <cmd> --json     # structured output for any command
 - Not (yet) covered: nameservers, URL forwarding, domain registration/transfer/contacts. The `client/` layer is kept separate from commands so these are easy to add.
 - This is an unofficial tool and is not affiliated with Name.com.
 
+## Roadmap & contributing
+
+`namecom-cli` is **v1 of a provider-agnostic "agents can do DNS" tool**. The
+registrar API (`src/client.js`) is a separate layer from the commands, so adding
+another provider is a small, well-scoped contribution.
+
+**Wanted — help expand it to more registrars:**
+
+- [ ] Cloudflare
+- [ ] AWS Route 53
+- [ ] Porkbun
+- [ ] Namecheap
+
+If "agents that can do DNS" should work for *your* registrar, come build it — see
+[good first issues](https://github.com/hypersocialinc/namecom-cli/labels/good%20first%20issue)
+and [CONTRIBUTING.md](CONTRIBUTING.md) (it documents the provider interface).
+
 ## License
 
 MIT © Hypersocial, Inc.
