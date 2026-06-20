@@ -13,7 +13,7 @@
     "skills"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20.12"
   },
   "scripts": {
     "namecom": "node bin/namecom.js",

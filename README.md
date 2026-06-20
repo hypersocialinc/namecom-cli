@@ -5,7 +5,7 @@ A fast, **agent-friendly** command-line tool for [Name.com](https://www.name.com
 - **`--json` everywhere** + a `commands` introspection command, so AI agents can discover and drive the whole surface
 - **Idempotent `records set`** (create-or-update, never duplicate) — the right primitive for automation and IaC
 - **Secure auth** — credentials live in the macOS Keychain (or a `0600` config file), never in your shell environment
-- **Zero native dependencies** — just Node 18+ and `commander`
+- **Zero native dependencies** — just Node 20+ and a few small pure-JS deps (`commander`, `@clack/prompts`, `picocolors`)
 
 > Why this exists: the only prior community tool (`namedns`) has been unmaintained since 2018 and targets Name.com's dead v1 reseller API. `namecom-cli` uses the current v4 API and is designed to be driven by humans and agents alike.
 
