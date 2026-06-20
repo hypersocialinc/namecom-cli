@@ -22,12 +22,22 @@ namecom --help
 
 ### Install the agent skill
 
-This repo ships a Claude/Codex skill that teaches an agent to drive the CLI:
+This repo ships a Claude/Codex skill that teaches an agent to drive the CLI. The
+CLI can install its own skill:
+
+```bash
+namecom skill install --agent claude-code      # or: --agent codex
+namecom skill path                             # prints the bundled SKILL.md for manual/offline install
+```
+
+…or use the official skills CLI directly:
 
 ```bash
 npx skills add hypersocialinc/namecom-cli --skill namecom --agent claude-code
-# or: --agent codex
 ```
+
+The skill is written to work zero-install — it calls `npx namecom-cli` when the
+`namecom` binary isn't on PATH — so adding only the skill still works.
 
 ## Authenticate
 

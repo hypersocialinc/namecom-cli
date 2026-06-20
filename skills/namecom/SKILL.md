@@ -11,11 +11,17 @@ description: Use when managing Name.com DNS records or domains from the command 
 
 ## Setup
 
-Requires the CLI on PATH:
+This skill drives the `namecom` CLI. It works with **zero install** via `npx` —
+prefer `npx namecom-cli <args>` if the `namecom` binary isn't already on PATH:
 
 ```bash
-npm install -g namecom-cli      # or: npx namecom-cli ...
+npx namecom-cli --help          # zero-install, runs the latest published CLI
+# or install once for a faster `namecom` on PATH:
+npm install -g namecom-cli
 ```
+
+Throughout this skill, `namecom <args>` and `npx namecom-cli <args>` are
+interchangeable — use the latter if the binary isn't installed.
 
 Auth (production token from https://www.name.com/account/settings/api):
 

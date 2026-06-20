@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 
 import {
   normHost,
@@ -8,6 +9,7 @@ import {
   classifyUpsert,
 } from "../src/runtime.js";
 import { buildProgram, commandTree } from "../src/cli.js";
+import { skillInstallArgs, bundledSkillPath } from "../src/commands/skill.js";
 
 test("normHost: @ and undefined are the zone apex", () => {
   assert.equal(normHost("@"), "");
@@ -77,4 +79,26 @@ test("commandTree: agent introspection exposes the surface and hides itself", ()
   // records subcommands include the idempotent `set`
   const records = tree.commands.find((c) => c.name === "records");
   assert.ok(records.commands.some((c) => c.name === "set"));
+  // the skill installer is exposed too
+  const skill = tree.commands.find((c) => c.name === "skill");
+  assert.ok(skill && skill.commands.some((c) => c.name === "install"));
+});
+
+test("skillInstallArgs: delegates to the skills CLI for the chosen agent", () => {
+  assert.deepEqual(skillInstallArgs("claude-code"), [
+    "skills",
+    "add",
+    "hypersocialinc/namecom-cli",
+    "--skill",
+    "namecom",
+    "--agent",
+    "claude-code",
+  ]);
+  assert.equal(skillInstallArgs("codex").at(-1), "codex");
+});
+
+test("bundledSkillPath: resolves to an existing SKILL.md", () => {
+  const p = bundledSkillPath();
+  assert.ok(p.endsWith("/skills/namecom/SKILL.md"));
+  assert.ok(existsSync(p));
 });

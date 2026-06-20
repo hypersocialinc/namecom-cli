@@ -1,9 +1,12 @@
+import { createRequire } from "node:module";
 import { Command } from "commander";
 import { registerAccount } from "./commands/account.js";
 import { registerDomains } from "./commands/domains.js";
 import { registerRecords } from "./commands/records.js";
+import { registerSkill } from "./commands/skill.js";
 
-const VERSION = "0.1.0";
+const require = createRequire(import.meta.url);
+const VERSION = require("../package.json").version;
 
 export function buildProgram() {
   const program = new Command();
@@ -23,6 +26,7 @@ export function buildProgram() {
   registerAccount(program);
   registerDomains(program);
   registerRecords(program);
+  registerSkill(program);
 
   program
     .command("commands")
